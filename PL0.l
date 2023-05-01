@@ -1,7 +1,7 @@
 %{
 	#include "PL0.tab.h"
 	#include <stdlib.h>
-	void yyerror(*char);
+	void yyerror(char*);
 %}
 
 ident ([a-zA-Z][a-zA-Z0-9]*)
@@ -16,8 +16,6 @@ float ([0-9]+("."[0-9]+)?)
 "procedure"	{return PROCEDURE;}
 "call"		{return CALL;}
 "odd"		{return ODD;}
-
-"Goodbye"		{return EOF;}
 
 [ \t]   ;       /* skip whitespace */
 

@@ -1,14 +1,13 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
-    void yyerror(char *);
+    void yyerror(char*);
     int yylex(void);
 
     float sym[26];
 %}
 
-%token DECLARATION 
-%token EOF 
+%token DECLARATION
 %token IF
 %token ELSE
 %token WHILE
@@ -24,6 +23,7 @@
 %token <floatValue> FLOAT 
 %token <floatValue> VARIABLE
 %type <floatValue> statement expression
+%type <floatValue> moreExpression term factor moreTerm
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -36,7 +36,7 @@
 %%
 
 program:
-        block EOF'\n'
+        block 
         ;
 
 block:	decs code;
@@ -45,7 +45,7 @@ decs:	| DECLARATION VARIABLE ';'
 		DECLARATION VARIABLE moreDecs ';'
 		;
 		
-moreDecs: ',' VARIABLE
+moreDecs:
 		| ',' VARIABLE moreDecs
 		;
 		
@@ -80,27 +80,28 @@ condition: ODD VARIABLE
 		| expression '>' expression
 		;
 
-expression: '+' term moreExpression		{$<int>$=0;}
-		| '-' term moreExpression		{$<int>$=0;}
+expression: '+' term moreExpression		{$$=0;}
+		| '-' term moreExpression		{$$=0;}
 		;
 		
-moreExpression: '+' term moreExpression	{$<int>$=0;}
-		| '+' term
-		| '-' term moreExpression		{$<int>$=0;}
-		| '-' term
+moreExpression: '+' term moreExpression	{$$=0;}
+		| '+' term						{$$=0;}
+		| '-' term moreExpression		{$$=0;}
+		| '-' term						{$$=0;}
 		;
 		
 term:	factor moreTerm;
 
-moreTerm: '*' factor moreTerm
-		| '/' factor moreTerm
-		| '*' factor
-		| '/' factor
+moreTerm: '*' factor moreTerm			{$$=0;}
+		| '/' factor moreTerm			{$$=0;}
+		| '*' factor					{$$=0;}
+		| '/' factor					{$$=0;}
 		;
 		
-factor: VARIABLE
-		| FLOAT
-		| '(' expression ')';
+factor: VARIABLE						{$$=0;}
+		| FLOAT							{$$=0;}
+		| '(' expression ')'			{$$=0;}
+		;
 
 %%
 
