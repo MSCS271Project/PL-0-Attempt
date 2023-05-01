@@ -17,6 +17,8 @@ float ([0-9]+("."[0-9]+)?)
 "call"		{return CALL;}
 "odd"		{return ODD;}
 
+"Goodbye"	{return FUCKOFF;}
+
 [ \t]   ;       /* skip whitespace */
 
 "var"		{return DECLARATION;}

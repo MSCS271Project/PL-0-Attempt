@@ -20,6 +20,7 @@
 %token EQQ 
 %token ASG 
 %token ODD
+%token FUCKOFF
 %token <floatValue> FLOAT 
 %token <floatValue> VARIABLE
 %type <floatValue> statement expression
@@ -36,7 +37,7 @@
 %%
 
 program:
-        block 
+        block FUCKOFF
         ;
 
 block:	decs code;
@@ -80,27 +81,37 @@ condition: ODD VARIABLE
 		| expression '>' expression
 		;
 
-expression: '+' term moreExpression		{$$=0;}
-		| '-' term moreExpression		{$$=0;}
+expression: '+' term moreExpression		{$$=$$+$2;}
+		| '-' term moreExpression		{$$=$$-$2;}
 		;
 		
-moreExpression: '+' term moreExpression	{$$=0;}
-		| '+' term						{$$=0;}
-		| '-' term moreExpression		{$$=0;}
-		| '-' term						{$$=0;}
+moreExpression: '+' term moreExpression	{$$=$$+$2;}
+		| '+' term						{$$=$$+$2;}
+		| '-' term moreExpression		{$$=$$-$2;}
+		| '-' term						{$$=$$-$2;}
 		;
 		
 term:	factor moreTerm;
 
-moreTerm: '*' factor moreTerm			{$$=0;}
-		| '/' factor moreTerm			{$$=0;}
-		| '*' factor					{$$=0;}
-		| '/' factor					{$$=0;}
+moreTerm: '*' factor moreTerm			{$$=$$*$2;}
+		| '/' factor moreTerm			{if($2 == 0){
+												yyerror("Division by 0");
+											}else{
+												$$ = $$/$2;
+											}
+										}
+		| '*' factor					{$$=$$*$2;}
+		| '/' factor					{if($2 == 0){
+												yyerror("Division by 0");
+											}else{
+												$$ = $$/$2;
+											}
+										}
 		;
 		
-factor: VARIABLE						{$$=0;}
-		| FLOAT							{$$=0;}
-		| '(' expression ')'			{$$=0;}
+factor: VARIABLE						{$$=$1;}
+		| FLOAT							{$$=$1;}
+		| '(' expression ')'			{$$=$2;}
 		;
 
 %%
