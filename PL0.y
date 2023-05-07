@@ -73,13 +73,13 @@ statement:
 moreStatement:
 		| statement ';' moreStatement ;
 		
-condition: ODD VARIABLE
-		| expression EQQ expression
-		| expression GEQ expression
-		| expression LEQ expression
-		| expression '#' expression
-		| expression '<' expression
-		| expression '>' expression
+condition: 	ODD VARIABLE {$$ = 0;}
+		| expression EQQ expression {$$ = ($1 == $3);}
+		| expression GEQ expression {$$ = ($1 >= $3);}
+		| expression LEQ expression {$$ = ($1 <= $3);}
+		| expression '#' expression {$$ = ($1 != $3);}
+		| expression '<' expression {$$ = ($1 < $3);}
+		| expression '>' expression {$$ = ($1 > $3);}
 		;
 
 expression: term '+' expression		{$$=$1+$3;}
