@@ -17,7 +17,7 @@ float ([0-9]+("."[0-9]+)?)
 "call"		{return CALL;}
 "odd"		{return ODD;}
 
-"Goodbye"	{return FUCKOFF;}
+"Goodbye"	{return FUCKOFF;printf("Fuck Off");}
 
 [ \t]   ;       /* skip whitespace */
 
@@ -28,7 +28,7 @@ float ([0-9]+("."[0-9]+)?)
 ":="		{return ASG;} /*Assignment Operator*/
 "=="		{return EQQ;} /*Conditional Equals Operator*/
 [<>#?!:;{}]		{return *yytext;}
-[-+()/*\n]     {return *yytext;}
+[-+()/*]     {return *yytext;}
 
 {float}		 { yylval.floatValue = atof(yytext);
                    return FLOAT;

@@ -24,7 +24,7 @@
 %token <floatValue> FLOAT 
 %token <floatValue> VARIABLE
 %type <floatValue> statement expression
-%type <floatValue> moreExpression term factor moreTerm
+%type <floatValue> term factor
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -42,8 +42,8 @@ program:
 
 block:	decs code;
 
-decs:	| DECLARATION VARIABLE ';'
-		DECLARATION VARIABLE moreDecs ';'
+decs:	DECLARATION VARIABLE moreDecs ';'
+		| DECLARATION VARIABLE ASG FLOAT ';'	{sym[$<stringValue>2] = $4;}
 		;
 		
 moreDecs:
@@ -60,17 +60,18 @@ procedures:
 		;
 
 statement:
-		VARIABLE ASG expression
+		VARIABLE ASG expression				{sym[$<stringValue>1] = $3;}
 		| '?' VARIABLE						{$$ = 0;}
 		| CALL VARIABLE						{$$ = 0;}
 		| '!' expression					{$$ = 0;}
-		| '{' statement moreStatement '}'   {$$ = 0;}
+		| '{' statement ';' moreStatement '}'   {$$ = 0;}
 		| IF condition THEN statement		{$$ = 0;}
 		| WHILE condition DO statement		{$$ = 0;}
+		| VARIABLE						{printf("%g\n",sym[$<stringValue>1]);}
         ;
         
 moreStatement:
-		';' statement moreStatement | ;
+		| statement ';' moreStatement ;
 		
 condition: ODD VARIABLE
 		| expression EQQ expression
@@ -81,35 +82,21 @@ condition: ODD VARIABLE
 		| expression '>' expression
 		;
 
-expression: '+' term moreExpression		{$$=$$+$2;}
-		| '-' term moreExpression		{$$=$$-$2;}
+expression: term '+' expression		{$$=$1+$3;}
+		| term '-' expression		{$$=$1-$3;}
+		| term							{$$=$1;}
 		;
 		
-moreExpression: '+' term moreExpression	{$$=$$+$2;}
-		| '+' term						{$$=$$+$2;}
-		| '-' term moreExpression		{$$=$$-$2;}
-		| '-' term						{$$=$$-$2;}
-		;
-		
-term:	factor moreTerm;
-
-moreTerm: '*' factor moreTerm			{$$=$$*$2;}
-		| '/' factor moreTerm			{if($2 == 0){
+term:	factor '*' term				{$$=$1*$3;}
+		| factor '/' term			{if($3 == 0){
 												yyerror("Division by 0");
 											}else{
-												$$ = $$/$2;
+												$$ = $1/$3;
 											}
-										}
-		| '*' factor					{$$=$$*$2;}
-		| '/' factor					{if($2 == 0){
-												yyerror("Division by 0");
-											}else{
-												$$ = $$/$2;
-											}
-										}
-		;
+										}	
+		| factor;
 		
-factor: VARIABLE						{$$=$1;}
+factor: VARIABLE						{$$=sym[$<stringValue>1];}
 		| FLOAT							{$$=$1;}
 		| '(' expression ')'			{$$=$2;}
 		;
@@ -121,7 +108,7 @@ void yyerror(char *s) {
 }
 
 int main(void) {
-    freopen ("a.txt", "r", stdin);  //a.txt holds the expression
+    freopen ("PL0.txt", "r", stdin);  //a.txt holds the expression
     yyparse();
 }
 
