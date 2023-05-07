@@ -24,7 +24,7 @@
 %token <floatValue> FLOAT 
 %token <floatValue> VARIABLE
 %type <floatValue> statement expression
-%type <floatValue> term factor
+%type <floatValue> term factor condition
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
